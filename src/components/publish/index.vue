@@ -25,6 +25,18 @@
             <el-radio :label="-1">自动</el-radio>
           </el-radio-group>
         </el-form-item>
+        <el-form-item>
+          <el-upload
+            v-for='(item, index) in imageUrl'
+            action=''
+            :key='index'
+            class="avatar-uploader"
+            :show-file-list="false"
+            @click.native.prevent='isVisible = true'>
+            <img v-if="item" :src="item" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+        </el-form-item>
         <el-form-item prop='channel_id' label="频道">
           <el-select v-model="form.channel_id" placeholder="请选择频道">
             <el-option v-for='(item, index) in channelList' :label="item.name" :key='index' :value="index"></el-option>
@@ -36,6 +48,32 @@
         </el-form-item>
       </el-form>
     </el-card>
+    <el-dialog
+      title="选择封面"
+      :visible.sync="isVisible"
+      width="30%"
+      :append-to-body='true'
+      >
+       <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+          <el-tab-pane label="素材库" name="images">
+            <image-list ref='imageList'></image-list>
+          </el-tab-pane>
+          <el-tab-pane label="本地上传" name="location">
+            <input type="file" ref='coverFile' @change="onUpload" placeholder="选择文件">
+            <el-upload
+              action=''
+              class="avatar-uploader"
+              :show-file-list="false"
+              @click.native.prevent='isVisible = true'>
+              <img v-if="preImageUrl" :src="preImageUrl" class="avatar">
+            </el-upload>
+          </el-tab-pane>
+        </el-tabs>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="isVisible = false">取 消</el-button>
+        <el-button type="primary" @click="onConfirmed" v-loading.body='isloading'>确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -44,6 +82,7 @@ import { getChannelList } from '../../api/channel.js'
 import { publish } from '../../api/publish.js'
 import { getArticle, onEdit } from '../../api/article.js'
 import { upLoadImage } from '../../api/image/index.js'
+import ImageList from '../images/components/index.vue'
 import {
   // 需要的 extensions
   Doc,
@@ -72,7 +111,12 @@ export default {
         },
         channel_id: null
       },
+      isVisible: false,
       channelList: [],
+      activeName: 'images',
+      imageUrl: [''],
+      preImageUrl: '',
+      isloading: false,
       extensions: [
         new Doc(),
         new Text(),
@@ -143,6 +187,37 @@ export default {
           this.$message({ message: '存入草稿失败', type: 'error' })
           console.log(err)
         })
+    },
+    onUpload () {
+      const file = this.$refs.coverFile.files[0]
+      this.preImageUrl = window.URL.createObjectURL(file)
+    },
+    handleClick () {
+      return 123
+    },
+    onConfirmed () {
+      if (this.activeName === 'location') {
+        this.isloading = true
+        this.isVisible = false
+        if (this.$refs.coverFile.files[0]) {
+          const image = new FormData()
+          image.append('image', this.$refs.coverFile.files[0])
+          console.log(image.get('image'))
+          upLoadImage(image).then(res => {
+            this.imageUrl.push(res.data.data.url)
+            this.preImageUrl = null
+            this.$refs.coverFile.value = null
+            this.isloading = false
+          })
+            .catch(err => {
+              console.log(err)
+              this.isloading = false
+            })
+        }
+      } else {
+        this.imageUrl.push(this.$refs.imageList.selectedUrl)
+        this.isVisible = false
+      }
     }
   },
   created () {
@@ -157,9 +232,39 @@ export default {
           console.log(err)
         })
     }
+  },
+  components: {
+    ImageList
   }
 }
 </script>
 
-<style>
+<style scoped="scoped">
+  /deep/.avatar-uploader .el-upload {
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+    }
+    /deep/.avatar-uploader .el-upload:hover {
+      border-color: #409EFF;
+    }
+    /deep/.avatar-uploader-icon {
+      font-size: 28px;
+      color: #8c939d;
+      width: 178px;
+      height: 178px;
+      line-height: 178px;
+      text-align: center;
+    }
+    /deep/.avatar {
+      width: 178px;
+      height: 178px;
+      display: block;
+    }
+    /deep/.el-form-item__content {
+      display: flex;
+    }
 </style>

@@ -6,7 +6,7 @@ import Layout from '../components/layout/index.vue'
 import Article from '../components/article/index.vue'
 import Publish from '../components/publish/index.vue'
 import Image from '../components/images/index.vue'
-import UserCommit from '../components/commit/index.vue'
+import UserComment from '../components/comment/index.vue'
 import Fans from '../components/fans/index.vue'
 import Setting from '../components/setting/index.vue'
 Vue.use(VueRouter)
@@ -42,9 +42,9 @@ const routes = [
         name: 'image'
       },
       {
-        path: 'commit',
-        component: UserCommit,
-        name: 'userCommit'
+        path: 'comment',
+        component: UserComment,
+        name: 'userComment'
       },
       {
         path: 'setting',

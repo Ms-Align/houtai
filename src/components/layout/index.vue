@@ -14,7 +14,7 @@
                <span class="username">{{username}}</span>
              </div>
              <el-dropdown-menu slot="dropdown">
-               <el-dropdown-item>个人中心</el-dropdown-item>
+               <el-dropdown-item @click.native='setting'>个人中心</el-dropdown-item>
                <el-dropdown-item @click.native = 'open'>退出登录</el-dropdown-item>
              </el-dropdown-menu>
            </el-dropdown>
@@ -71,6 +71,9 @@ export default {
           message: '已取消'
         })
       })
+    },
+    setting () {
+      this.$router.push('/setting')
     }
   }
 }

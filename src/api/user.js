@@ -15,3 +15,19 @@ export const getUserProfile = function () {
     })
   }
 }
+// 提交头像跟新
+export const upLoadUserPhoto = (data) => {
+  return request({
+    method: 'PATCH',
+    url: '/mp/v1_0/user/photo',
+    data
+  })
+}
+// 更新用户信息
+export const updateUserInfo = (data) => {
+  return request({
+    method: 'PATCH',
+    url: '/mp/v1_0/user/profile',
+    data
+  })
+}

@@ -1,6 +1,6 @@
 <template>
     <el-menu
-          :default-active="currentMenu"
+          :default-active="this.$route.path"
           class="sideMenu"
           background-color="#001E34"
           text-color="#fff"
@@ -23,7 +23,7 @@
             <i class="el-icon-s-promotion"></i>
             <span slot="title">发布文章</span>
           </el-menu-item>
-          <el-menu-item index="/commit">
+          <el-menu-item index="/comment">
             <i class="el-icon-chat-round"></i>
             <span slot="title">评论管理</span>
           </el-menu-item>
@@ -43,7 +43,6 @@ export default {
   name: 'AppAside',
   data () {
     return {
-      currentMenu: this.$route.path
     }
   },
   props: ['isCollapse']
